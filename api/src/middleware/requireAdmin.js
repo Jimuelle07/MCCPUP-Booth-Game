@@ -1,9 +1,10 @@
-import { adminAuth, firebaseAdminConfigured } from '../firebaseAdmin.js';
+import { azureAuthConfigured, verifyToken } from '../azureAuth.js';
 
-// Bootstrap allow-list: an admin becomes fully authorized once their email
-// is added to ADMIN_EMAILS (comma-separated) or their Firebase account has
-// the `admin: true` custom claim set. The allow-list lets the very first
-// admin get in before anyone has claims to grant.
+// Admin allow-list: an account is authorized once its email is added to
+// ADMIN_EMAILS (comma-separated). Azure AD B2C's default user flows don't
+// carry custom roles/claims without extra App Roles setup, so the
+// allow-list is the primary access check here (see docs/deployment.md for
+// the App Roles upgrade path if you outgrow it).
 function isAllowedEmail(email) {
   const list = (process.env.ADMIN_EMAILS || '')
     .split(',')
@@ -12,12 +13,16 @@ function isAllowedEmail(email) {
   return Boolean(email) && list.includes(email.toLowerCase());
 }
 
-// Verifies the Firebase ID token on `Authorization: Bearer <token>` and
-// requires the account to be an approved admin (allow-list or custom
-// claim). Responds 503 if GCP Identity Platform isn't configured yet, 401
-// if the token is missing/invalid, 403 if the account isn't approved.
+function claimEmail(decoded) {
+  return decoded.emails?.[0] || decoded.email || decoded.preferred_username;
+}
+
+// Verifies the Azure AD B2C ID token on `Authorization: Bearer <token>` and
+// requires the account's email to be on the admin allow-list. Responds 503
+// if B2C isn't configured yet, 401 if the token is missing/invalid, 403 if
+// the account isn't approved.
 export async function requireAdmin(req, res, next) {
-  if (!firebaseAdminConfigured) {
+  if (!azureAuthConfigured) {
     return res.status(503).json({ error: 'Admin auth is not configured on this deployment.' });
   }
 
@@ -29,15 +34,16 @@ export async function requireAdmin(req, res, next) {
 
   let decoded;
   try {
-    decoded = await adminAuth.verifyIdToken(token);
+    decoded = await verifyToken(token);
   } catch {
     return res.status(401).json({ error: 'Invalid or expired token.' });
   }
 
-  if (decoded.admin !== true && !isAllowedEmail(decoded.email)) {
+  const email = claimEmail(decoded);
+  if (!isAllowedEmail(email)) {
     return res.status(403).json({ error: 'This account is not an approved admin.' });
   }
 
-  req.admin = { uid: decoded.uid, email: decoded.email };
+  req.admin = { email };
   next();
 }

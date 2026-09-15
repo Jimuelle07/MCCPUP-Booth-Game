@@ -1,52 +1,77 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import {
-  createUserWithEmailAndPassword,
-  onAuthStateChanged,
-  sendPasswordResetEmail,
-  signInWithEmailAndPassword,
-  signInWithPopup,
-  signOut,
-} from 'firebase/auth';
-import { auth, firebaseConfigured, googleProvider } from '../lib/firebase';
+import { InteractionRequiredAuthError } from '@azure/msal-browser';
+import { b2cPolicies, loginRequest, msalConfigured, msalInstance } from '../lib/msal';
 
 const AuthContext = createContext(null);
 
-// Admin auth state for the /admin area, backed by GCP Identity Platform
-// (Firebase Authentication). Being signed in only proves identity; the API
-// separately checks for admin access on every protected request.
+// Azure AD B2C owns the actual sign-in / sign-up / password-reset UI (its
+// own hosted, brandable page) — this context just drives the popup and
+// tracks whichever account comes back. See docs/deployment.md for the B2C
+// tenant + user-flow setup this depends on.
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(firebaseConfigured);
+  const [account, setAccount] = useState(null);
+  const [loading, setLoading] = useState(msalConfigured);
 
   useEffect(() => {
-    if (!firebaseConfigured) return undefined;
-    return onAuthStateChanged(auth, (u) => {
-      setUser(u);
-      setLoading(false);
-    });
+    if (!msalConfigured) return undefined;
+    let cancelled = false;
+
+    msalInstance
+      .initialize()
+      .then(() => msalInstance.handleRedirectPromise())
+      .then(() => {
+        if (cancelled) return;
+        const active = msalInstance.getActiveAccount() || msalInstance.getAllAccounts()[0] || null;
+        if (active) msalInstance.setActiveAccount(active);
+        setAccount(active);
+        setLoading(false);
+      })
+      .catch(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const value = {
-    user,
+    account,
     loading,
-    configured: firebaseConfigured,
-    async login(email, password) {
-      await signInWithEmailAndPassword(auth, email, password);
+    configured: msalConfigured,
+
+    // Drives both the login page and the sign-up page: B2C's combined
+    // policy shows a "create one now" link for new users inside its own
+    // hosted screen, so there is no separate sign-up API call to make.
+    async signInOrSignUp() {
+      const result = await msalInstance.loginPopup(loginRequest);
+      msalInstance.setActiveAccount(result.account);
+      setAccount(result.account);
     },
-    async signup(email, password) {
-      await createUserWithEmailAndPassword(auth, email, password);
+
+    async resetPassword() {
+      const result = await msalInstance.loginPopup({ ...loginRequest, authority: b2cPolicies.resetAuthority });
+      msalInstance.setActiveAccount(result.account);
+      setAccount(result.account);
     },
-    async loginWithGoogle() {
-      await signInWithPopup(auth, googleProvider);
-    },
-    async resetPassword(email) {
-      await sendPasswordResetEmail(auth, email);
-    },
+
     async logout() {
-      await signOut(auth);
+      await msalInstance.logoutPopup();
+      setAccount(null);
     },
+
     async getIdToken() {
-      return auth.currentUser ? auth.currentUser.getIdToken() : null;
+      if (!account) return null;
+      try {
+        const result = await msalInstance.acquireTokenSilent({ ...loginRequest, account });
+        return result.idToken;
+      } catch (err) {
+        if (err instanceof InteractionRequiredAuthError) {
+          const result = await msalInstance.acquireTokenPopup(loginRequest);
+          return result.idToken;
+        }
+        throw err;
+      }
     },
   };
 
@@ -59,36 +84,35 @@ export function useAuth() {
   return ctx;
 }
 
-// Maps Firebase's auth/* error codes to copy that names the problem and the
-// recovery, instead of surfacing the raw SDK error string.
+// B2C's documented pattern for a "Forgot password?" link placed inside the
+// combined sign-in policy itself: it doesn't reset the password there, it
+// cancels sign-in with this specific error so the app can redirect into the
+// dedicated reset policy. See Microsoft's B2C sample apps for the same check.
+export function isForgotPasswordRedirect(err) {
+  return String(err?.errorMessage || '').includes('AADB2C90118');
+}
+
+export function isUserCancelled(err) {
+  return err?.errorCode === 'user_cancelled';
+}
+
+// Maps msal-browser's error codes to copy that names the problem and the
+// recovery, instead of surfacing the raw MSAL error string.
 export function describeAuthError(err) {
-  const code = err?.code || '';
-
-  // Firebase sometimes folds the server's own error text into the code for
-  // this one case (e.g. "auth/api-key-not-valid.-please-pass-a-valid-api-key."),
-  // so match by prefix instead of equality.
-  if (code.startsWith('auth/api-key-not-valid') || code === 'auth/invalid-api-key' || code === 'auth/configuration-not-found') {
-    return 'Admin sign-in isn’t configured correctly for this deployment. Tell whoever set up GCP Identity Platform.';
-  }
-
-  switch (code) {
-    case 'auth/invalid-email':
-      return 'That email address doesn’t look right. Double-check it and try again.';
-    case 'auth/user-not-found':
-    case 'auth/invalid-credential':
-    case 'auth/wrong-password':
-      return 'That email and password don’t match an admin account.';
-    case 'auth/email-already-in-use':
-      return 'An account already exists for that email. Try logging in instead.';
-    case 'auth/weak-password':
-      return 'Use a password with at least 6 characters.';
-    case 'auth/too-many-requests':
-      return 'Too many attempts. Wait a minute and try again.';
-    case 'auth/popup-closed-by-user':
-      return 'Google sign-in was closed before it finished.';
-    case 'auth/network-request-failed':
+  switch (err?.errorCode) {
+    case 'popup_window_error':
+      return 'Your browser blocked the sign-in popup. Allow popups for this site and try again.';
+    case 'interaction_in_progress':
+      return 'A sign-in window is already open. Finish or close it, then try again.';
+    case 'monitor_window_timeout':
+    case 'user_timeout_reached':
+      return 'That took too long and timed out. Try again.';
+    case 'network_error':
       return 'Network error — check your connection and try again.';
+    case 'invalid_client':
+    case 'unauthorized_client':
+      return 'Admin sign-in isn’t configured correctly for this deployment. Tell whoever set up Azure AD B2C.';
     default:
-      return 'Something went wrong. Please try again.';
+      return 'Something went wrong signing in. Please try again.';
   }
 }

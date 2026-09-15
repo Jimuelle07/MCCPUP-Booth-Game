@@ -6,10 +6,6 @@ dist/
 !.env.example
 !**/.env.example
 
-# GCP/Firebase service-account keys must never land in this public repo.
-*serviceAccountKey*.json
-*-firebase-adminsdk-*.json
-
 .agents/
 
 .claude/

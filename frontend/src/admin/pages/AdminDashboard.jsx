@@ -4,13 +4,14 @@ import { AuthCard, Banner } from '../components';
 import { useAuth } from '../AuthContext';
 
 // STATUS.checking -> STATUS.granted | STATUS.pending | STATUS.error, based
-// on whether the API's admin allow-list/custom-claim check accepts this
-// signed-in account.
+// on whether the API's admin allow-list check accepts this signed-in account.
 const STATUS = { CHECKING: 'checking', GRANTED: 'granted', PENDING: 'pending', ERROR: 'error' };
 
 export default function AdminDashboard({ navigate }) {
-  const { user, getIdToken, logout } = useAuth();
+  const { account, getIdToken, logout } = useAuth();
   const [status, setStatus] = useState(STATUS.CHECKING);
+
+  const email = account?.idTokenClaims?.emails?.[0] || account?.username;
 
   useEffect(() => {
     let cancelled = false;
@@ -41,7 +42,7 @@ export default function AdminDashboard({ navigate }) {
     <AuthCard title="Admin dashboard" navigate={navigate}>
       <MonoLabel>Signed in as</MonoLabel>
       <p className="mt-4 md:mt-2 font-degularvariable text-body leading-body text-[var(--kb-text)] break-all">
-        {user?.email}
+        {email}
       </p>
 
       <div className="mt-16 md:mt-3">

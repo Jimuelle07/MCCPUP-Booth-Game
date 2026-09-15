@@ -38,22 +38,22 @@ export default function AdminApp() {
 }
 
 function AdminRoutes({ path, navigate }) {
-  const { user, loading, configured } = useAuth();
+  const { account, loading, configured } = useAuth();
 
   useEffect(() => {
     if (!configured || loading) return;
     const isAuthPage = ['/admin/login', '/admin/signup', '/admin/forgot-password'].includes(path);
-    if (user && isAuthPage) navigate('/admin/dashboard');
-    if (!user && path === '/admin/dashboard') navigate('/admin/login');
+    if (account && isAuthPage) navigate('/admin/dashboard');
+    if (!account && path === '/admin/dashboard') navigate('/admin/login');
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, loading, configured, path]);
+  }, [account, loading, configured, path]);
 
   if (!configured) {
     return (
       <Screen>
         <MonoTag>Admin auth not configured</MonoTag>
         <p className="mt-16 md:mt-3 font-bergenmonoregular text-body leading-body text-[var(--kb-text-dim)] max-w-[480px] text-center">
-          Set the VITE_FIREBASE_* environment variables (see frontend/.env.example) and rebuild to enable the admin area.
+          Set the VITE_AZURE_B2C_* environment variables (see frontend/.env.example) and rebuild to enable the admin area.
         </p>
       </Screen>
     );
@@ -70,7 +70,7 @@ function AdminRoutes({ path, navigate }) {
   if (path === '/admin/signup') return <AdminSignUp navigate={navigate} />;
   if (path === '/admin/forgot-password') return <AdminForgotPassword navigate={navigate} />;
   if (path === '/admin/dashboard') {
-    return user ? <AdminDashboard navigate={navigate} /> : null;
+    return account ? <AdminDashboard navigate={navigate} /> : null;
   }
   return <AdminLogin navigate={navigate} />;
 }

@@ -1,31 +1,22 @@
 import { useState } from 'react';
 import { GatePillButton, MonoLabel, UnderlineLink } from '../../components/ui';
-import { AuthCard, Banner, Field } from '../components';
-import { describeAuthError, useAuth } from '../AuthContext';
+import { AuthCard, Banner } from '../components';
+import { describeAuthError, isUserCancelled, useAuth } from '../AuthContext';
 
 export default function AdminForgotPassword({ navigate }) {
   const { resetPassword } = useAuth();
-  const [email, setEmail] = useState('');
   const [error, setError] = useState(null);
-  const [sent, setSent] = useState(false);
   const [busy, setBusy] = useState(false);
 
-  async function onSubmit(e) {
-    e.preventDefault();
+  async function onReset() {
     if (busy) return;
     setError(null);
     setBusy(true);
     try {
-      await resetPassword(email.trim());
-      setSent(true);
+      await resetPassword();
+      navigate('/admin/dashboard');
     } catch (err) {
-      // Firebase reports "user-not-found" here; treat it the same as
-      // success so this form can't be used to enumerate admin emails.
-      if (err?.code === 'auth/user-not-found') {
-        setSent(true);
-      } else {
-        setError(describeAuthError(err));
-      }
+      if (!isUserCancelled(err)) setError(describeAuthError(err));
     } finally {
       setBusy(false);
     }
@@ -35,44 +26,22 @@ export default function AdminForgotPassword({ navigate }) {
     <AuthCard title="Reset password" navigate={navigate}>
       <MonoLabel>Booth admin access</MonoLabel>
 
-      {sent ? (
+      <p className="mt-8 md:mt-2 font-bergenmonoregular text-caption leading-caption text-[var(--kb-text-dim)]">
+        Azure AD B2C will ask for your admin email, send a verification
+        code, and let you set a new password &mdash; all on its own secure page.
+      </p>
+
+      {error && (
         <div className="mt-16 md:mt-3">
-          <Banner tone="success">
-            If {email.trim() || 'that address'} has an admin account, a reset link is on its way.
-          </Banner>
-          <GatePillButton className="mt-24 md:mt-6" onClick={() => navigate('/admin/login')}>
-            Back to sign in
-          </GatePillButton>
+          <Banner tone="error">{error}</Banner>
         </div>
-      ) : (
-        <>
-          <p className="mt-8 md:mt-2 font-bergenmonoregular text-caption leading-caption text-[var(--kb-text-dim)]">
-            Enter your admin email and we&rsquo;ll send a link to set a new password.
-          </p>
-
-          {error && (
-            <div className="mt-16 md:mt-3">
-              <Banner tone="error">{error}</Banner>
-            </div>
-          )}
-
-          <form onSubmit={onSubmit} className="mt-16 md:mt-3 flex flex-col gap-[17px] md:gap-[12px]">
-            <Field
-              id="email"
-              label="Email"
-              type="email"
-              autoComplete="email"
-              autoFocus
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <GatePillButton type="submit" disabled={busy || !email.trim()}>
-              {busy ? 'Sending…' : 'Send reset link'}
-            </GatePillButton>
-          </form>
-        </>
       )}
+
+      <div className="mt-24 md:mt-6 flex flex-col gap-[17px] md:gap-[12px]">
+        <GatePillButton onClick={onReset} disabled={busy}>
+          {busy ? 'Opening reset…' : 'Reset password'}
+        </GatePillButton>
+      </div>
 
       <p className="mt-24 md:mt-6 text-center">
         <UnderlineLink onClick={() => navigate('/admin/login')}>

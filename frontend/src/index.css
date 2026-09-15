@@ -1004,12 +1004,6 @@ body::after {
 }
 
 /* Admin auth forms (login / sign up / forgot password) */
-.field-error {
-  font-size: var(--text-caption);
-  line-height: var(--leading-caption);
-  color: var(--kb-wrong);
-}
-
 .auth-banner {
   display: flex;
   align-items: flex-start;
@@ -1046,35 +1040,4 @@ body::after {
 
 .auth-banner--success .auth-banner-icon {
   color: var(--kb-correct);
-}
-
-.auth-divider {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.auth-divider span:first-child,
-.auth-divider span:last-child {
-  flex: 1;
-  height: 1px;
-  background: var(--kb-surface-light);
-}
-
-.auth-divider span:nth-child(2) {
-  font-size: var(--text-caption);
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--kb-text-dim);
-}
-
-.auth-oauth-button {
-  width: 100%;
-  gap: 10px;
-}
-
-.auth-oauth-icon {
-  width: 18px;
-  height: 18px;
-  flex: none;
 }
