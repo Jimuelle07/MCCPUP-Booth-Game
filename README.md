@@ -1,21 +1,19 @@
+<div align="center">
+
 # MCCPUP-Booth-Game
 
 <p>
-  <img alt="Last commit" src="https://img.shields.io/github/last-commit/Jimuelle07/MCCPUP-Booth-Game?style=flat-square&color=c084fc" />
-  <img alt="Open issues" src="https://img.shields.io/github/issues/Jimuelle07/MCCPUP-Booth-Game?style=flat-square&color=c084fc" />
-  <img alt="Repo size" src="https://img.shields.io/github/repo-size/Jimuelle07/MCCPUP-Booth-Game?style=flat-square&color=c084fc" />
+  <img alt="React" src="https://img.shields.io/badge/React-18-61DAFB?style=flat&logo=react&logoColor=white&labelColor=1a1025" />
+  <img alt="Vite" src="https://img.shields.io/badge/Vite-5-646CFF?style=flat&logo=vite&logoColor=white&labelColor=1a1025" />
+  <img alt="Tailwind CSS" src="https://img.shields.io/badge/Tailwind_CSS-v4-06B6D4?style=flat&logo=tailwindcss&logoColor=white&labelColor=1a1025" />
+  <img alt="Express" src="https://img.shields.io/badge/Express-4-000000?style=flat&logo=express&logoColor=white&labelColor=1a1025" />
+  <img alt="SQLite" src="https://img.shields.io/badge/SQLite-leaderboard-003B57?style=flat&logo=sqlite&logoColor=white&labelColor=1a1025" />
+  <img alt="Azure AD B2C" src="https://img.shields.io/badge/Azure_AD_B2C-Auth-0078D4?style=flat&logo=microsoftazure&logoColor=white&labelColor=1a1025" />
+  <img alt="Azure Container Apps" src="https://img.shields.io/badge/Azure-Container_Apps-0078D4?style=flat&logo=microsoftazure&logoColor=white&labelColor=1a1025" />
+  <img alt="Docker" src="https://img.shields.io/badge/Docker-Compose-2496ED?style=flat&logo=docker&logoColor=white&labelColor=1a1025" />
 </p>
 
-<p>
-  <img alt="React" src="https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react&logoColor=white" />
-  <img alt="Vite" src="https://img.shields.io/badge/Vite-5-646CFF?style=flat-square&logo=vite&logoColor=white" />
-  <img alt="Tailwind CSS" src="https://img.shields.io/badge/Tailwind_CSS-v4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white" />
-  <img alt="Express" src="https://img.shields.io/badge/Express-4-000000?style=flat-square&logo=express&logoColor=white" />
-  <img alt="SQLite" src="https://img.shields.io/badge/SQLite-leaderboard-003B57?style=flat-square&logo=sqlite&logoColor=white" />
-  <img alt="Azure AD B2C" src="https://img.shields.io/badge/Azure_AD_B2C-Auth-0078D4?style=flat-square&logo=microsoftazure&logoColor=white" />
-  <img alt="Azure Container Apps" src="https://img.shields.io/badge/Azure-Container_Apps-0078D4?style=flat-square&logo=microsoftazure&logoColor=white" />
-  <img alt="Docker" src="https://img.shields.io/badge/Docker-Compose-2496ED?style=flat-square&logo=docker&logoColor=white" />
-</p>
+</div>
 
 "Pokémon or Programming Language?" — a local booth game. Players are shown a
 word and must guess whether it's a Pokémon name or a programming language
