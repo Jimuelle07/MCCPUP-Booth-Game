@@ -1,0 +1,89 @@
+{
+  "version": 1,
+  "skills": {
+    "andon": {
+      "source": "kuya-egg/Monozukuri",
+      "sourceType": "github",
+      "skillPath": "andon/SKILL.md",
+      "computedHash": "03d77366b983999fe7487a86a54e524ecb2861b4cd6030283f19c4f3dcaea353"
+    },
+    "genchi-genbutsu": {
+      "source": "kuya-egg/Monozukuri",
+      "sourceType": "github",
+      "skillPath": "genchi-genbutsu/SKILL.md",
+      "computedHash": "2597f6460b21b48f032e3588c7164a783dba22e14420e4782b041658d5dadc80"
+    },
+    "hansei": {
+      "source": "kuya-egg/Monozukuri",
+      "sourceType": "github",
+      "skillPath": "hansei/SKILL.md",
+      "computedHash": "652c0c83032d020a96d106c3ffa95c3a36563e04a1b3671ff96e3f2f7f4cc495"
+    },
+    "jidoka": {
+      "source": "kuya-egg/Monozukuri",
+      "sourceType": "github",
+      "skillPath": "jidoka/SKILL.md",
+      "computedHash": "f8a932f3ae630644dc586cac3fd41a7b47197b174c12849d287518c219a9b0ba"
+    },
+    "kaizen": {
+      "source": "kuya-egg/Monozukuri",
+      "sourceType": "github",
+      "skillPath": "kaizen/SKILL.md",
+      "computedHash": "73b91b5df2206188f5cd2d188f247b4d5f8e38bebbc56971890c59e254931ecc"
+    },
+    "kanso": {
+      "source": "kuya-egg/Monozukuri",
+      "sourceType": "github",
+      "skillPath": "kanso/SKILL.md",
+      "computedHash": "6d44c696819c524f0a6ca23184e6326c2ddbcfe703203cce661c95413f238b0f"
+    },
+    "kata": {
+      "source": "kuya-egg/Monozukuri",
+      "sourceType": "github",
+      "skillPath": "kata/SKILL.md",
+      "computedHash": "d8bc947ecfde990a0ef8e63c0264c153d4bcdd4b518d93dbb85093d918bddbf6"
+    },
+    "kodawari": {
+      "source": "kuya-egg/Monozukuri",
+      "sourceType": "github",
+      "skillPath": "kodawari/SKILL.md",
+      "computedHash": "5133ec00f546422a38af77fdfe1f3044b5f3178dce01c94e543b3718c965502a"
+    },
+    "monozukuri-blueprint": {
+      "source": "kuya-egg/Monozukuri",
+      "sourceType": "github",
+      "skillPath": "monozukuri-blueprint/SKILL.md",
+      "computedHash": "d895a7f3c26bff53c74abe955e05fc260daf6835b989d306eea08e0b51cc888b"
+    },
+    "monozukuri-core": {
+      "source": "kuya-egg/Monozukuri",
+      "sourceType": "github",
+      "skillPath": "monozukuri-core/SKILL.md",
+      "computedHash": "2a7619aa1b8733700018969c4f730e893a94c738e58f87e6e1ad6d5be3a13caa"
+    },
+    "monozukuri-router": {
+      "source": "kuya-egg/Monozukuri",
+      "sourceType": "github",
+      "skillPath": "monozukuri-router/SKILL.md",
+      "computedHash": "d309dc1b7b990f33d7745d73c209b2552bf60681ac95a74d7625b2a8613fa57c"
+    },
+    "nemawashi": {
+      "source": "kuya-egg/Monozukuri",
+      "sourceType": "github",
+      "skillPath": "nemawashi/SKILL.md",
+      "computedHash": "09ab6f53c88a54dbf6cfc7766d5519d281e0a58baabf1240b0033c3bde0da5a5"
+    },
+    "poka-yoke": {
+      "source": "kuya-egg/Monozukuri",
+      "sourceType": "github",
+      "skillPath": "poka-yoke/SKILL.md",
+      "computedHash": "632bb21fbe4d720d58833addbab3d6fbdf28af25fb268aaac540d7c1abae9a1c"
+    },
+    "shukka": {
+      "source": "kuya-egg/Monozukuri",
+      "sourceType": "github",
+      "skillPath": "shukka/SKILL.md",
+      "computedHash": "7b63b61cf79d0ad5a09152009b36cd64863521d4ea3dc2d92fd4a951e713560f"
+    }
+  }
+}
