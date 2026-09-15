@@ -1,0 +1,19 @@
+services:
+  api:
+    build: ./api
+    environment:
+      - PORT=3001
+    volumes:
+      - leaderboard-data:/app/data
+    expose:
+      - "3001"
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - api
+
+volumes:
+  leaderboard-data:

@@ -1,0 +1,67 @@
+/* Intentionally plain for Phase 1 — the real "Flying Papers" token-based
+   skin (design/tailwind-v4.md) is applied in Phase 4. */
+
+:root {
+  color-scheme: light;
+  font-family: system-ui, sans-serif;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  background: #f5f5f5;
+}
+
+.app {
+  width: min(480px, 90vw);
+  text-align: center;
+}
+
+.word {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 1.5rem 0;
+}
+
+.answers {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+button {
+  font-size: 1rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+}
+
+.answers button:first-child {
+  background: #f8c1ba;
+}
+
+.answers button:last-child {
+  background: #b5c995;
+}
+
+input {
+  font-size: 1rem;
+  padding: 0.5rem;
+  margin: 0.5rem 0;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+td,
+th {
+  padding: 0.4rem;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+}
