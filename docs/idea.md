@@ -2,20 +2,21 @@
 
 ## Elevator pitch
 
-**"Pokémon or Programming Language?"** — a fast-paced booth quiz. A word
-flashes on screen. The player has one job: decide if it's a Pokémon name or
-a programming language name, before the clock runs out. Simple rule, oddly
-hard in practice (is "Ruby" a gem, a snake-loving nerd tool, or... wait, is
-that a Pokémon too?) — which is exactly what makes it a fun booth draw.
+**"Pokémon or Programming Language?"** — a fast-paced booth quiz. Each round
+shows 4 words — one from a target category and three decoys from the other
+— and the player has 10 seconds to spot the odd one out. Rounds alternate
+between "find the programming language" and "find the Pokémon," which keeps
+players from settling into a single mental shortcut. Deliberately deceptive
+names (Gholdengo, Malbolge, Porygon) are what make it a fun booth draw.
 
 ## Audience & setting
 
 - Played standing at a booth at a community/club event (see `context.md`).
-- Sessions need to be **short** (~60 seconds) so a line of people can cycle
-  through quickly.
+- Sessions are a randomized 1-20 round quiz, 10 seconds per round, so a line
+  of people can cycle through quickly and no two sessions feel identical.
 - Spectators watching the current player should be able to follow along —
-  the game state (current word, score, time left) should be readable from a
-  short distance.
+  the game state (prompt, options, score, time left) should be readable
+  from a short distance.
 
 ## Core loop
 
@@ -26,20 +27,21 @@ that a Pokémon too?) — which is exactly what makes it a fun booth draw.
    the leaderboard).
 3. **Countdown** — a short 3-2-1 beat before the round starts, so the player
    is ready.
-4. **Play round (the core loop, repeats until time runs out):**
-   - A single word is shown, large and centered.
-   - Two answer options are always visible: **"Pokémon"** and
-     **"Programming Language."**
-   - Player answers by clicking a button or pressing an assigned key
-     (e.g. Left arrow = Pokémon, Right arrow = Programming Language).
-   - Correct answer → brief positive feedback (flash/sound), score +1, next
-     word appears immediately.
-   - Wrong answer → brief negative feedback, score does **not** increase,
-     next word appears immediately (see Non-goals — no life loss / no
-     round-ending penalty, to keep pacing fast for a booth).
-   - Round ends when the timer hits 0.
-5. **Round result screen** — shows final score, whether it's a new personal
-   or all-time high score, and a prompt to submit to the leaderboard.
+4. **Play round (repeats for a randomized 1-20 rounds):**
+   - Each round randomly asks one of two prompts: **"Which one is a
+     programming language?"** (3 Pokémon decoys) or **"Which one is a
+     Pokémon?"** (3 programming language decoys).
+   - 4 options are shown as buttons; the player has **10 seconds** to pick
+     one.
+   - Correct pick → score +1, brief positive feedback, next round starts
+     immediately.
+   - Wrong pick, or time runs out with no pick → no score change, brief
+     reveal of the correct answer, next round starts immediately (see
+     Non-goals — no life loss / no session-ending penalty).
+   - Session ends after the last round (not a fixed clock — round count is
+     randomized per session, between 1 and 20).
+5. **Round result screen** — shows final score out of the session's round
+   count, and a prompt to submit to the leaderboard.
 6. **Leaderboard screen** — shows the current top scores (e.g. top 10), then
    returns to the idle/attract screen after a short delay.
 
@@ -47,22 +49,22 @@ that a Pokémon too?) — which is exactly what makes it a fun booth draw.
 
 - Every word belongs to exactly one of the two categories — the dataset is
   curated so there's no ambiguity (a word is never a real name in both
-  domains). Difficulty comes from **obscurity**, not trick overlaps: e.g.
-  well-known entries (Pikachu, Python) are easy; lesser-known ones
-  (Stunfisk, Zig) are hard.
-- No penalty for wrong answers beyond not scoring — this keeps the pace fast
-  and forgiving, which matters for a walk-up booth audience who may not want
-  to feel embarrassed by "losing."
-- Each round pulls words from the dataset without immediate repeats within
-  the same round.
+  domains). Difficulty comes from **deceptive naming**, not trick overlaps:
+  e.g. Gholdengo (Go + Django) and Malbolge (sounds like a legendary) are
+  the whole point of the dataset (see `context.md` for the source list).
+- No penalty for a wrong pick, or for timing out, beyond not scoring — this
+  keeps the pace fast and forgiving for a walk-up booth audience.
+- Each round draws its 4 words without replacement from the session's word
+  pool, so nothing repeats within a session.
+- Session length (number of rounds) is randomized between 1 and 20 each
+  time a game starts, so replaying doesn't feel identical.
 
 ## Scoring
 
-- +1 point per correct answer.
-- **Assumed (not yet decided):** an optional streak bonus (e.g. +1 extra
-  every 5 in a row correct) could be added later to reward focus, but is
-  out of scope for the first version — flag as a future enhancement, not a
-  requirement.
+- +1 point per correct pick within the 10-second window.
+- **Assumed (not yet decided):** an optional streak bonus could be added
+  later to reward focus, but is out of scope for the first version — flag
+  as a future enhancement, not a requirement.
 - Final score is what's eligible for the leaderboard.
 
 ## Leaderboard
@@ -98,8 +100,9 @@ that a Pokémon too?) — which is exactly what makes it a fun booth draw.
 ## Success criteria
 
 - A new player can understand the rules within ~5 seconds of watching someone
-  else play (visually self-explanatory: word + two big labeled buttons).
-- A full session (name entry → play → leaderboard) comfortably fits inside
-  60-90 seconds so a booth line keeps moving.
+  else play (visually self-explanatory: prompt + 4 labeled option buttons +
+  visible countdown).
+- A full session (name entry → 1-20 rounds → leaderboard) comfortably fits
+  inside 60-90 seconds so a booth line keeps moving.
 - The app runs fully offline once the Docker container is up — no
   live internet dependency during play.

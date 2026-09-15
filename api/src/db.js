@@ -16,4 +16,14 @@ db.exec(`
   )
 `);
 
+// Migration: older databases (from before round count was tracked) won't
+// have this column yet.
+const hasRoundsColumn = db
+  .prepare('PRAGMA table_info(scores)')
+  .all()
+  .some((col) => col.name === 'rounds');
+if (!hasRoundsColumn) {
+  db.exec('ALTER TABLE scores ADD COLUMN rounds INTEGER');
+}
+
 export default db;

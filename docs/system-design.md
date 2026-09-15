@@ -75,8 +75,9 @@ leaderboard database:
    times out.
 2. **NameEntry** — short text input (name/initials), confirm to continue.
 3. **Countdown** — 3-2-1 visual beat, no input accepted.
-4. **Play** — word display + two answer controls + live timer + live score.
-   Accepts click on either answer button, or Left/Right arrow keys.
+4. **Play** — prompt ("find the language" / "find the Pokémon") + 4 option
+   buttons + a 10s per-round countdown + live score + round counter
+   (e.g. "Round 3 / 12").
 5. **Result** — final score, "new high score" indicator if applicable,
    confirm to submit to leaderboard (name already captured in step 2).
 6. **Leaderboard** — ranked list (top 10), auto-returns to Attract after a
@@ -88,11 +89,15 @@ leaderboard database:
 idle → name_entry → countdown → playing → result → leaderboard → idle
 ```
 
-- `playing` internally ticks a timer (default 60s, configurable constant)
-  and advances through a shuffled queue of words from `/api/words`, with no
-  immediate repeats.
-- Any wrong or right answer stays inside `playing` — only the timer
-  expiring transitions to `result` (per the no-penalty rule in `idea.md`).
+- On entering `playing`, the client fetches the full word list from
+  `/api/words` and builds a session client-side: a randomized round count
+  (1-20), where each round randomly picks a mode (find-the-language or
+  find-the-pokemon) and draws its answer + 3 decoys without replacement
+  from the remaining pool.
+- Each round ticks its own 10s timer (configurable constant). A correct
+  pick, wrong pick, or timeout all advance to the next round; only running
+  out of rounds transitions to `result` (per the no-penalty rule in
+  `idea.md`).
 
 ### Components mapped to design tokens
 
@@ -119,17 +124,22 @@ Minimal JSON API, no auth (local booth use only):
 
 ### Data model
 
-**Word dataset** (`api/src/data/words.json`, static, curated by hand —
-content itself is an implementation task, not part of this design doc):
+**Word dataset** (`api/src/data/words.json`, static, 50 Pokémon + 50
+programming languages curated specifically because their names are easy to
+mistake for the other category — full source list in `context.md`):
 
 ```json
 [
-  { "text": "Pikachu", "category": "pokemon" },
-  { "text": "Python", "category": "language" },
-  { "text": "Snorlax", "category": "pokemon" },
-  { "text": "Rust", "category": "language" }
+  { "text": "Porygon", "category": "pokemon" },
+  { "text": "Scala", "category": "language" },
+  { "text": "Gholdengo", "category": "pokemon" },
+  { "text": "Malbolge", "category": "language" }
 ]
 ```
+
+The API returns the full 100-word list in one response; round-building
+(random round count, mode per round, decoy selection) happens client-side
+so no round-shape logic lives in the API.
 
 **Leaderboard table** (SQLite):
 
@@ -174,10 +184,7 @@ CREATE TABLE scores (
 
 ## Open risks / follow-ups
 
-- Word dataset content (the actual curated list and its size/difficulty
-  balance) is not yet built — tracked as an open item in `context.md`.
-- Visual reuse of the "Flying Papers" style kit needs confirmation before
-  frontend implementation (see `context.md`).
-- No phase/implementation plan has been written yet; recommend creating one
-  (Monozukuri blueprint stage 4 equivalent) once these three docs are
-  reviewed and approved.
+- Word dataset is now the full curated 50/50 list (see `context.md` for
+  source); no further curation work pending.
+- "Flying Papers" visual skin has been applied to the frontend (Tailwind v4
+  tokens wired up, all screens styled) — no longer an open item.
