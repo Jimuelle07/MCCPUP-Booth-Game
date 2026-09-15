@@ -3,13 +3,24 @@ services:
     build: ./api
     environment:
       - PORT=3001
+      - ADMIN_EMAILS=${ADMIN_EMAILS:-}
+      - AZURE_B2C_TENANT_NAME=${AZURE_B2C_TENANT_NAME:-}
+      - AZURE_B2C_CLIENT_ID=${AZURE_B2C_CLIENT_ID:-}
+      - AZURE_B2C_SIGNIN_POLICY=${AZURE_B2C_SIGNIN_POLICY:-B2C_1_susi}
     volumes:
       - leaderboard-data:/app/data
     expose:
       - "3001"
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      args:
+        VITE_AZURE_B2C_TENANT_NAME: ${VITE_AZURE_B2C_TENANT_NAME:-}
+        VITE_AZURE_B2C_CLIENT_ID: ${VITE_AZURE_B2C_CLIENT_ID:-}
+        VITE_AZURE_B2C_SIGNIN_POLICY: ${VITE_AZURE_B2C_SIGNIN_POLICY:-B2C_1_susi}
+        VITE_AZURE_B2C_RESET_POLICY: ${VITE_AZURE_B2C_RESET_POLICY:-B2C_1_reset}
+        VITE_AZURE_B2C_REDIRECT_URI: ${VITE_AZURE_B2C_REDIRECT_URI:-}
     ports:
       - "8080:80"
     depends_on:

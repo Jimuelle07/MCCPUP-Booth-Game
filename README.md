@@ -1,5 +1,22 @@
 # MCCPUP-Booth-Game
 
+<p>
+  <img alt="Last commit" src="https://img.shields.io/github/last-commit/Jimuelle07/MCCPUP-Booth-Game?style=flat-square&color=c084fc" />
+  <img alt="Open issues" src="https://img.shields.io/github/issues/Jimuelle07/MCCPUP-Booth-Game?style=flat-square&color=c084fc" />
+  <img alt="Repo size" src="https://img.shields.io/github/repo-size/Jimuelle07/MCCPUP-Booth-Game?style=flat-square&color=c084fc" />
+</p>
+
+<p>
+  <img alt="React" src="https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react&logoColor=white" />
+  <img alt="Vite" src="https://img.shields.io/badge/Vite-5-646CFF?style=flat-square&logo=vite&logoColor=white" />
+  <img alt="Tailwind CSS" src="https://img.shields.io/badge/Tailwind_CSS-v4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white" />
+  <img alt="Express" src="https://img.shields.io/badge/Express-4-000000?style=flat-square&logo=express&logoColor=white" />
+  <img alt="SQLite" src="https://img.shields.io/badge/SQLite-leaderboard-003B57?style=flat-square&logo=sqlite&logoColor=white" />
+  <img alt="Azure AD B2C" src="https://img.shields.io/badge/Azure_AD_B2C-Auth-0078D4?style=flat-square&logo=microsoftazure&logoColor=white" />
+  <img alt="Azure Container Apps" src="https://img.shields.io/badge/Azure-Container_Apps-0078D4?style=flat-square&logo=microsoftazure&logoColor=white" />
+  <img alt="Docker" src="https://img.shields.io/badge/Docker-Compose-2496ED?style=flat-square&logo=docker&logoColor=white" />
+</p>
+
 "Pokémon or Programming Language?" — a local booth game. Players are shown a
 word and must guess whether it's a Pokémon name or a programming language
 name before the timer runs out. Scores are saved to a local leaderboard.
@@ -77,11 +94,39 @@ Then open **http://localhost:5173**.
 Note: in this mode, leaderboard data is written to `api/data/leaderboard.db`
 on your local filesystem rather than a Docker volume.
 
+## Admin dashboard (optional)
+
+`/admin` has a separate login / sign up / forgot-password flow for booth
+organizers, backed by Azure AD B2C (Microsoft Entra External ID). B2C hosts
+the actual sign-in/sign-up/password-reset forms itself on its own secure,
+brandable page — this app's `/admin` pages just launch that flow and land
+on a dashboard once it returns a token, they never collect a password
+directly. It's off by default: without B2C config the admin pages show a
+"not configured" screen and the public game is unaffected.
+
+To enable it:
+
+1. Copy `frontend/.env.example` → `frontend/.env` and `api/.env.example` →
+   `api/.env`, then fill in your own Azure AD B2C tenant's values. **Never
+   commit these files** — they're gitignored on purpose.
+2. Restart the dev servers (or rebuild the Docker images) so the new env
+   vars are picked up.
+3. From `/admin/signup`, use B2C's hosted "Sign up now" link with an email
+   listed in `api/.env`'s `ADMIN_EMAILS`, then sign in at `/admin/login`.
+
+Full Azure AD B2C setup and serverless (Container Apps) deployment steps
+are in [`docs/deployment.md`](docs/deployment.md).
+
 ## Project structure
 
 ```
-api/         Express API + SQLite leaderboard
+api/         Express API + SQLite leaderboard + admin auth middleware
+  src/middleware/  Azure AD B2C token verification for /api/admin/*
+  src/routes/      words, scores, admin
 frontend/    React + Vite game UI, built and served via nginx in Docker
-docs/        Docs-first project artifacts (context, idea, system design, plan)
+  src/admin/       /admin login, sign up, forgot-password, dashboard
+  src/lib/         MSAL (Azure AD B2C) client init
+docs/        Docs-first project artifacts (context, idea, system design,
+             plan, deployment)
 design/      Visual reference assets ("Flying Papers" style kit)
 ```

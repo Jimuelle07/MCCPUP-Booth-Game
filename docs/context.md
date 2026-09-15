@@ -65,8 +65,12 @@ constraints, decisions, assumptions, and open risks.
 
 ## Decisions log (from stakeholder Q&A)
 
-1. **Game format:** Timed score attack — a countdown (default 60s) runs while
-   the player answers as many words as possible; +1 per correct answer.
+1. **Game format:** Round-based quiz, superseding the original 60s
+   score-attack format. A session is a randomized 1-20 round quiz; each
+   round shows 4 options (1 correct + 3 decoys from the other category),
+   alternating between "find the language" and "find the Pokémon" prompts,
+   with a 10s-per-round timer. +1 per correct pick; no penalty for a wrong
+   pick or a timeout.
 2. **Tech stack:** React + Vite + Tailwind v4 on the frontend, Node/Express
    API on the backend, packaged for Docker.
 3. **Leaderboard:** Yes — persistent local leaderboard (top scores +
@@ -84,11 +88,12 @@ constraints, decisions, assumptions, and open risks.
 
 ## Open items for follow-up
 
-- **Open** — Word dataset curation (the actual list of Pokémon names and
-  programming language names, and how many/what difficulty mix) is not yet
-  built; `system-design.md` defines the schema, not the final content.
-- **Open** — Whether a phase/implementation plan (Monozukuri blueprint stage
-  4) should be written next, once `idea.md` and `system-design.md` are
-  reviewed.
-- **Open** — Confirm the "Flying Papers" style kit reuse (see Constraints
-  above) before frontend implementation begins.
+- **Resolved** — Word dataset is built: 50 Pokémon names + 50 programming
+  language names, hand-curated specifically because each name is easy to
+  mistake for the other category (e.g. Gholdengo reads as "Go" + "Django"
+  but is a Pokémon; Malbolge reads as a legendary Pokémon but is an
+  esoteric language). Lives in `api/src/data/words.json`.
+- **Resolved** — Implementation plan written: `docs/implementation-plan.md`
+  (Monozukuri blueprint stage 4).
+- **Resolved** — "Flying Papers" style kit reuse confirmed by proceeding;
+  Tailwind v4 tokens are wired up and applied across all screens.

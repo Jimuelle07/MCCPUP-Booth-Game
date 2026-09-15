@@ -1,19 +1,12 @@
 import { Router } from 'express';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
 
-// Placeholder dataset for Phase 1 (proving the boundaries).
-// Phase 3 replaces this list with the real curated Pokémon/language dataset.
-const words = [
-  { text: 'Pikachu', category: 'pokemon' },
-  { text: 'Python', category: 'language' },
-  { text: 'Snorlax', category: 'pokemon' },
-  { text: 'Rust', category: 'language' },
-  { text: 'Charmander', category: 'pokemon' },
-  { text: 'JavaScript', category: 'language' },
-  { text: 'Bulbasaur', category: 'pokemon' },
-  { text: 'Go', category: 'language' },
-  { text: 'Squirtle', category: 'pokemon' },
-  { text: 'Ruby', category: 'language' },
-];
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const words = JSON.parse(
+  readFileSync(path.join(__dirname, '../data/words.json'), 'utf-8')
+);
 
 const router = Router();
 
